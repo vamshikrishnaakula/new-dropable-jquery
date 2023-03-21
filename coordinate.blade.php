@@ -23,173 +23,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
         integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous">
     </script>
-    {{-- <script>
-        $(document).on('mousedown', 'select option', function(e) {
-            var self = $(this);
-            var selectedValue = self.val();
-            if ($('#' + selectedValue).length) {
-                return;
-            }
-            var draggableDiv = $('<div/>').prop('id', selectedValue).css({
-                position: 'absolute',
-                left: e.pageX,
-                top: e.pageY,
-                width: 100,
-                height: self.height(),
-                cursor: 'default',
-                background: '#ff0',
-                opacity: 1
-            }).text(self.val());
-            $('form').append(draggableDiv);
-
-            draggableDiv.draggable({
-                revert: false,
-            });
-        });
-
-        //
-        $(function() {
-            debugger
-
-            var positions = [];
-            $("form-control").draggable();
-            $("canvas").droppable({
-
-                drop: function(event, ui) {
-                    debugger
-                    var id = ui.draggable.attr("id");
-                    // alert(id);
-                    var offset = $(this).offset();
-                    var xPos = ui.offset.left - offset.left;
-                    var yPos = ui.offset.top - offset.top;
-                    //var Input=selectedValue;
-                    positions[id] = {
-                        x: xPos,
-                        y: yPos
-                    };
-                    //alert(xPos, yPos);
-                    $("#Input").text(id);
-                    //$("#coordinat").text("X: " + xPos + ", Y: " + yPos);
-                    $("#coordinat").text("FieldName: " + id + ", X: " + xPos + ", Y: " + yPos).append(
-                        "Vamshi");
-                    $("#coordinates").text(xPos);
-                    $("#ycoordinates").text(yPos);
-
-                }
-            });
-        });
-    </script> --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
 </head>
 
 <body>
     {{-- newscript --}}
-    <script>
-        $(document).ready(function() {
-            //var positions = {};
-            var positions = [];
-            var inputs = [];
-            var data = [];
 
-            $(document).on('mousedown', 'select option', function(e) {
-                var self = $(this);
-                var selectedValue = self.val();
-                if ($('#' + selectedValue).length) {
-                    return;
-                }
-                var draggableDiv = $('<div/>').prop('id', selectedValue).css({
-                    position: 'absolute',
-                    left: e.pageX,
-                    top: e.pageY,
-                    width: 100,
-                    height: self.height(),
-                    cursor: 'default',
-                    background: '#ff0',
-                    opacity: 1
-                }).text(self.val());
-
-                $('form').append(draggableDiv);
-
-                draggableDiv.draggable({
-                    revert: false,
-                });
-
-                /**$("canvas").droppable({
-                    drop: function(event, ui) {
-                        var id = ui.draggable.attr("id");
-                        var offset = $(this).offset();
-                        var xPos = ui.offset.left - offset.left;
-                        var yPos = ui.offset.top - offset.top;
-                        inputs.push(selectedValue + "," + xPos + "," + yPos);
-                        //positions.push(xPos, yPos);
-
-                        data.name = selectedValue;
-                        data.xPos = xPos;
-                        data.yPos = yPos;
-                        //inputs.push(data)
-                        //positions.push(xPos, yPos);
-                        console.log("vamshi====", inputs);
-                        $("#Input").html(data);
-                    }
-                });**/
-                //new code
-                $("canvas").droppable({
-                    drop: function(event, ui) {
-                        var id = ui.draggable.attr("id");
-                        var offset = $(this).offset();
-                        var xPos = ui.offset.left - offset.left;
-                        var yPos = ui.offset.top - offset.top;
-                         
-                        // Find the index of the selected value in the inputs array
-                        var index = inputs.findIndex(function(item) {
-                            return item.startsWith(selectedValue);
-                        });
-                        //alert(index);
-
-                        // If the selected value already exists in the array, update its position
-                        if (index !== -1) {
-                            var data = inputs[index].split(',');
-                            data[1] = xPos;
-                            data[2] = yPos;
-                            inputs[index] = data.join(',');
-                            //alert(index);
-                        }
-                        // If the selected value doesn't exist in the array, add it
-                        else {
-                            inputs.push(selectedValue + "," + xPos + "," + yPos);
-                        }
-
-                        // Display all selected options and their positions in the #Input element
-                        var inputText = "";
-                        for (var i = 0; i < inputs.length; i++) {
-                            var data = inputs[i].split(',');
-                            inputText += data[0] + ": (" + data[1] + ", " + data[2] + ")\n";
-                        }
-                        $("#Input").text(inputText);
-                        //alert(inputText);
-                        //positions.push(xPos, yPos);
-
-                        //data.name = selectedValue;
-                        //data.xPos = xPos;
-                        //data.yPos = yPos;
-                        //inputs.push(data)
-                        //positions.push(xPos, yPos);
-                        //console.log("vamshi====", inputtext);
-                       //$("#Input").html(data);
-                    }
-                });
-
-            });
-        });
-    </script>
     <title>Image Coordinates</title>
     <div class="container-fluid">
-        <form id="myForm">
+        <form id="myForm1" action="" type="post">
             @csrf
             <input type="hidden" id="custId" name="cusId" value={{ $document->id }}>
             <div class="col-md-4 " style="margin-left:605px">
                 <label for="input">Input value:</label>
-                <select name="fname" id='input' class="form-control" multiple='multiple'>
+                <select id='input' class="form-control" multiple='multiple'>
                     <option value="0">Please select ...</option>
                     <option value="HallticketNumber">HallticketNumber</option>
                     <option value="Name">Name</option>
@@ -205,15 +53,16 @@
             <center>
                 <canvas id="canvas"></canvas>
                 <p id="Input" style="font-family:verdana;font-size:160%;"></p>
-                <p id="coordinat" name="fool" style="font-family:verdana;font-size:160%;"></p><br>
+                <p hidden id="coordinat"></p>
+                <p hidden id="Inputdata"></p>
                 <p hidden id="coordinates"></p>
                 <p hidden id="ycoordinates"></p><br>
-                <button type="submit">Submit</button>
+                {{-- <button type="submit">Submit</button> --}}
+                <input id="formSub1" type="submit" value="Submit" class="btn btn-default">
             </center>
             <input type="hidden" id="Input2" name='name2'>
-            <input type="hidden"id="Xco" name="X">
-            <input type="hidden"id="Yco" name="Y">
-
+            {{-- <input type="hidden"id="Xco" name="X">
+            <input type="hidden"id="Yco" name="Y"> --}}
         </form>
 
     </div>
@@ -241,31 +90,159 @@
 </script>
 
 {{-- //ajax --}}
+
 <script>
+    $(document).ready(function() {
+        //var positions = {};
+        var positions = [];
+        var inputs = [];
+        var data = [];
+        var Mainarr = [];
+
+        $(document).on('mousedown', 'select option', function(e) {
+            var self = $(this);
+            var selectedValue = self.val();
+            if ($('#' + selectedValue).length) {
+                return;
+            }
+            var draggableDiv = $('<div/>').prop('id', selectedValue).css({
+                position: 'absolute',
+                left: e.pageX,
+                top: e.pageY,
+                width: 100,
+                height: self.height(),
+                cursor: 'default',
+                background: '#ff0',
+                opacity: 1
+            }).text(self.val());
+
+            $('form').append(draggableDiv);
+
+            draggableDiv.draggable({
+                revert: false,
+            });
+
+            //new code
+            $("canvas").droppable({
+                drop: function(event, ui) {
+                    var dragvar = ui.draggable.attr("id");
+                    var offset = $(this).offset();
+                    var xPos = ui.offset.left - offset.left;
+                    var yPos = ui.offset.top - offset.top;
+
+                    // Find the index of the selected value in the inputs array
+                    var index = inputs.findIndex(function(item) {
+                        return item.startsWith(dragvar);
+                    });
+                    //alert(index);
+
+                    // If the selected value already exists in the array, update its position
+                    if (index !== -1) {
+                        var data = inputs[index].split(',');
+                        data[1] = xPos;
+                        data[2] = yPos;
+                        inputs[index] = data.join(',');
+                        //alert(data);
+                    }
+                    // If the selected value doesn't exist in the array, add it
+                    else {
+                        inputs.push(dragvar + "," + xPos + "," + yPos);
+                    }
+
+                    // Display all selected options and their positions in the #Input element
+                    var inputText = "";
+                    for (var i = 0; i < inputs.length; i++) {
+                        var data = inputs[i].split(',');
+                        inputText += data[0] + ": (" + data[1] + ", " + data[2] + ")\n";
+                    }
+                    $("#Input").text(inputText);
+                    $("#Inputdata").text(Inputdata);
+                    $("#coordinat").text(data[0]);
+                    $("#coordinates").text(data[1]);
+                    $("#ycoordinates").text(data[2]);
+                    var Mainarr = [];
+                    Mainarr.push(inputText);
+                    //alert(typeof Mainarr);
+                }
+            });
+
+        });
+        //var cust_id = $('#custId').val();
+        //var cus_Id = document.getElementById("custId").innerHTML
+        //alert(cust_id);
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
+        $('#formSub1').on('click', function(e) {
+            var cust_id = $('#custId').val();
+            //alert(cust_id);
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "/run",
+                data: {
+                    
+                    info : inputs,
+                    cust_id:cust_id
+                },
+                /**data: {
+                    name: "John",
+                    age: 30,
+                    city: "New York"
+                },**/
+                //data: { name: "Boston", location: "jhon" },
+                success: function(result) {
+                    debugger;
+                    alert(result);
+                    console.log(result)
+                },
+                error: function(xhr, status, error) {
+                    alert("Error occured", error);
+                }
+            });
+        })
+
+    });
+</script>
+
+<script>
+    /**var dataaa = JSON.stringify(name);
+    alert(typeof dataaa);
+
+ $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
     jQuery('#myForm').submit(function(e) {
-        // var id = $('#input :selected').toArray().map(item => item.val);
+        debugger;
         var name = document.getElementById("Input").innerHTML;
-        var latitude = document.getElementById("coordinates").innerHTML;
-        var longitude = document.getElementById("ycoordinates").innerHTML;
         document.getElementById("Input2").value = name;
-        //alert(name);
-        //coordinates
-        document.getElementById("Xco").value = latitude;
-        document.getElementById("Yco").value = longitude;
-        //alert(longitude);
         e.preventDefault();
+        infodata=name
+        //infodata[0] = 'hi';
+        //infodata[1] = 'hello';
         jQuery.ajax({
-            url: "{{ url('run') }}",
-            data: jQuery('#myForm').serialize(),
-            //data:{name:name},
-            type: 'post',
+            url: '/run',
+            type: 'POST',
+            data: {
+                    //info: jQuery('#myForm').serialize(),
+                    info : infodata
+            },
+            //data: jQuery('#myForm').serialize(),
             success: function(result) {
-                alert(result);
-                //console.log(result)
+                debugger;
+                alert( result);
+                console.log(result)
             },
             error: function(xhr, status, error) {
                 alert("Error occured", error);
             }
         })
-    })
+    }) **/
 </script>
+
+<script></script>
